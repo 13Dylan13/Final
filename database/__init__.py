@@ -12,6 +12,36 @@ def create_extractedfiles_table(db):
             date_processed DATETIME
         ); ''')
 
+def create_sent_table(db):
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS sent(
+            Ref TEXT NOT NULL PRIMARY KEY,
+            CallTime TIMESTAMP,
+            CLI TEXT
+        ); ''')
+        
+        
+def create_vtm_table(db):
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS vtm_responses(
+            filename TEXT,
+            surveyid INTEGER NOT NULL PRIMARY KEY,
+            call_id NUMBER,
+            resolved TEXT,
+            verbatim TEXT,
+            AgentID TEXT,
+            survey_date TIMESTAMP
+        ); ''')
+
+def create_questions(db):
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS sent(
+            q_id NUMBER NOT NULL PRIMARY KEY,
+            vtm_desc TEXT NOT NULL PRIMARY KEY,
+            question TEXT NOT NULL PRIMARY KEY
+        ); ''')
+
+
 def select_all(db, table):
     cursor = db.execute(f'SELECT * FROM {table}') 
     result = cursor.fetchall()
@@ -30,6 +60,14 @@ def create_answers_table(db):
     
 def insert_extracted_filename(db, table, data):
     db.execute(f'INSERT OR IGNORE INTO {table} VALUES (?, ?)', data) 
+    db.commit()
+
+def insert_3Column_DB_table(db, table, data):
+    db.execute(f'INSERT OR IGNORE INTO {table} VALUES (?, ?, ?)', data) 
+    db.commit()
+    
+def insert_vtm_archive(db, table, data):
+    db.executemany(f'INSERT OR IGNORE INTO {table} VALUES (?, ?, ?, ?, ?)', data) 
     db.commit()
 
 def select_all(db, table):
