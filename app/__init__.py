@@ -177,6 +177,7 @@ def getVTM(db,startdate,checkfile):
             #Excel process for initial pipeline
             nstartdate = startdate - datetime.timedelta(days=1)
             phase1_pipeline_saveVTM_Excel(outcomes,nstartdate)
+            #WIP---create vtm output file
             #To be replaced with a database save
             #update database
             data = [filename[0:49],datetime.datetime.today().strftime('%Y-%m-%d')]
