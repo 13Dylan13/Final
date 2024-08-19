@@ -8,7 +8,6 @@ import os
 from zipfile import ZipFile 
 import pandas as pd
 import datetime
-from database import select_all
 from database import insert_extracted_filename
 import logging
 logging.basicConfig(filename='pipeline.log', encoding='utf-8', level=logging.DEBUG)
@@ -41,12 +40,21 @@ def getoutcomes(db,startdate,checkfile):
             cwd = os.chdir(r'C:\Users\DR2806\Downloads\uncompressed\download\tfl\in')
             filename = get_OutcomeFile_name(startdate,'.csv')
             outcomes = pd.read_csv(filename, low_memory=False)
-            #delete the umcompressed file
+            #delete the uncompressed file
             os.remove(filename)
             #Excel process for initial pipeline
             nstartdate = startdate - datetime.timedelta(days=1)
             phase1_pipeline_save_Excel(outcomes,nstartdate)
             #To be replaced with a database save
+            #WIP---create vtm output file
+            outcomes_vol = outcomes['call_id'].count()
+            outcomes_vol = str(outcomes_vol)
+            date = nstartdate
+            outcomes_vol_load = [date, outcomes_vol]
+            print (outcomes_vol_load)
+            insert_extracted_filename(db, 'outcomes_vol', outcomes_vol_load)
+            #update database 
+                #need to combine vol with same from outcomes
             #update database
             data = [filename[0:37],datetime.datetime.today().strftime('%Y-%m-%d')]
             insert_extracted_filename(db, 'extractedfiles', data)
@@ -177,9 +185,15 @@ def getVTM(db,startdate,checkfile):
             #Excel process for initial pipeline
             nstartdate = startdate - datetime.timedelta(days=1)
             phase1_pipeline_saveVTM_Excel(outcomes,nstartdate)
-            #WIP---create vtm output file
             #To be replaced with a database save
-            #update database
+            #WIP---create vtm output file
+            vtm_vol = outcomes['call_id'].count()
+            vtm_vol = str(vtm_vol)
+            date = nstartdate
+            vtm_vol_load = [date, vtm_vol]
+            print (vtm_vol_load)
+            insert_extracted_filename(db, 'vtm_vol', vtm_vol_load)
+            #update database 
             data = [filename[0:49],datetime.datetime.today().strftime('%Y-%m-%d')]
             insert_extracted_filename(db, 'extractedfiles', data)
             logging.info(f'{datetime.datetime.now()} - VTM Filename added to the database')
@@ -187,6 +201,25 @@ def getVTM(db,startdate,checkfile):
         logging.info(f'{datetime.datetime.now()} - VTM Filename not found on the server')
         pass
         
-
-
-
+def table_create(db):
+    from database import create_vtm_vol_table
+    from database import create_outcomes_vol_table
+    from database import create_extractedfiles_table
+    import pandas as pd
+    
+    #Create tables
+    create_vtm_vol_table(db)
+    create_outcomes_vol_table(db)
+    create_extractedfiles_table(db)
+    #Insert csv if available
+    cwd = os.chdir(r'C:\Users\DR2806\Downloads')
+    outcomes = pd.read_csv('outcomes.csv', low_memory=False)
+    outcomes = outcomes[['date','volume']]
+    outcomes = outcomes.dropna()
+    outcomes.to_sql('outcomes_vol', db, if_exists='replace', index=False)
+    outcomes = pd.read_csv('vtms.csv', low_memory=False)
+    outcomes = outcomes[['date','volume']]
+    outcomes = outcomes.dropna()
+    outcomes.to_sql('vtm_vol', db, if_exists='replace', index=False)
+    
+    
