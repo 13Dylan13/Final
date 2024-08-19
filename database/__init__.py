@@ -11,15 +11,20 @@ def create_extractedfiles_table(db):
             file_name TEXT NOT NULL PRIMARY KEY,
             date_processed DATETIME
         ); ''')
-
-def create_sent_table(db):
-    db.execute('''
-        CREATE TABLE IF NOT EXISTS sent(
-            Ref TEXT NOT NULL PRIMARY KEY,
-            CallTime TIMESTAMP,
-            CLI TEXT
-        ); ''')
         
+def create_vtm_vol_table(db):
+    db.execute('''
+               CREATE TABLE IF NOT EXISTS vtm_vol(
+                   date DATETIME NOT NULL PRIMARY KEY,
+                   volume TEXT
+                   ); ''')
+
+def create_outcomes_vol_table(db):
+    db.execute('''
+               CREATE TABLE IF NOT EXISTS outcomes_vol(
+                   date DATETIME NOT NULL PRIMARY KEY,
+                   volume TEXT
+                   ); ''')        
         
 def create_vtm_table(db):
     db.execute('''
