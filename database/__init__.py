@@ -29,21 +29,32 @@ def create_outcomes_vol_table(db):
 def create_vtm_table(db):
     db.execute('''
         CREATE TABLE IF NOT EXISTS vtm_responses(
-            filename TEXT,
-            surveyid INTEGER NOT NULL PRIMARY KEY,
+            voicesagecalloutid INTEGER NOT NULL PRIMARY KEY,
+            account_name TEXT,
             call_id NUMBER,
-            resolved TEXT,
-            verbatim TEXT,
-            AgentID TEXT,
-            survey_date TIMESTAMP
+            call_date TIMESTAMP
+            agent_id TEXT,
+            answer_1 TEXT,
+            answer_2 TEXT,
+        ); ''')
+        
+def create_outcomes_table(db):
+    db.execute('''
+        CREATE TABLE IF NOT EXISTS outcomes(
+            account_name TEXT,
+            call_id NUMBER,
+            call_time TIMESTAMP
+            start_time TIMESTAMP,
+            stop_time TIMESTAMP
         ); ''')
 
 def create_questions(db):
     db.execute('''
-        CREATE TABLE IF NOT EXISTS sent(
-            q_id NUMBER NOT NULL PRIMARY KEY,
-            vtm_desc TEXT NOT NULL PRIMARY KEY,
-            question TEXT NOT NULL PRIMARY KEY
+        CREATE TABLE IF NOT EXISTS questions(
+            account_name TEXT,
+            date_from DATETIME,
+            answer_1 TEXT,
+            answer_2 TEXT
         ); ''')
 
 
