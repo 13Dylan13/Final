@@ -53,8 +53,12 @@ def getoutcomes(db,startdate,checkfile):
             outcomes_vol_load = [date, outcomes_vol]
             print (outcomes_vol_load)
             insert_extracted_filename(db, 'outcomes_vol', outcomes_vol_load)
-            #update database 
-                #need to combine vol with same from outcomes
+            logging.info(f'{datetime.datetime.now()} - formatting outcomes for storage')
+            #format outcomes for database load
+            outcomes = outcomes.rename(columns={'accountname': 'account_name', 'calltime': 'call_time'})
+            outcomes=outcomes[['account_name','call_id','call_time','start_time','stop_time']]
+            outcomes.to_sql('vtm_responses', db, if_exists='replace', index=False)
+            logging.info(f'{datetime.datetime.now()} - vtm responses saved')
             #update database
             data = [filename[0:37],datetime.datetime.today().strftime('%Y-%m-%d')]
             insert_extracted_filename(db, 'extractedfiles', data)
@@ -193,6 +197,11 @@ def getVTM(db,startdate,checkfile):
             vtm_vol_load = [date, vtm_vol]
             print (vtm_vol_load)
             insert_extracted_filename(db, 'vtm_vol', vtm_vol_load)
+            #format vtm for database load
+            logging.info(f'{datetime.datetime.now()} - formatting vtm responses for storage')
+            outcomes=outcomes[['voicesagecalloutid','account_name','call_id','call_date','agent_id','answer_1','answer_2']]
+            outcomes.to_sql('vtm_responses', db, if_exists='replace', index=False)
+            logging.info(f'{datetime.datetime.now()} - vtm responses saved')
             #update database 
             data = [filename[0:49],datetime.datetime.today().strftime('%Y-%m-%d')]
             insert_extracted_filename(db, 'extractedfiles', data)
